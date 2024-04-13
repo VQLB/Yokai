@@ -6,10 +6,7 @@ from cameraObj import Camera
 from src.StatusBar import StatusBar
 from src.ui.UIManager import UIManager
 from textureatlas import TextureAtlas
-from entity.Entity import Entity
 from ui.Inventory import Inventory
-from thirstbar import ThirstBar
-from healthbar import HealthBar
 from entity.Character import Character
 
 FPS = 60
