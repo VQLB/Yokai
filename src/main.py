@@ -5,6 +5,7 @@ from src.ui.UIManager import UIManager
 from textureatlas import TextureAtlas
 from hungerbar import HungerBar
 from ui.Inventory import Inventory
+import time
 
 FPS = 60
 WINDOW_SIZE = (800, 600)
@@ -29,7 +30,6 @@ def main():
     inventory = Inventory(3, 5, inventory_tile=texture_atlas.get_sprite((4, 0)))
 
     ui_manager.add_panel(inventory)
-    ui_manager.make_active(inventory)
 
     # Main loop
     while running:
@@ -39,6 +39,10 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_e:
+                    ui_manager.toggle_active(inventory)
+
         bar.hunger -= .002
         MainSurface.fill((0, 0, 0))
 
