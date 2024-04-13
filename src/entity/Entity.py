@@ -38,15 +38,16 @@ class Entity:
 
             yUp = self.position[1] - (colliderObj.position[1] + colliderObj.size[1])
             yDown = (self.position[1] + 100) - colliderObj.position[1]
-            if (abs(xLeft)<abs(xRight)):
-                self.position[0]+=min(abs(xLeft), abs(xRight))*0.5
-            else:
-                self.position[0]-=min(abs(xLeft), abs(xRight)) * 0.5
 
             if (abs(yUp) < abs(yDown)):
                 self.position[1] += min(abs(yUp), abs(yDown)) * 0.5
             else:
                 self.position[1] -= min(abs(yUp), abs(yDown)) * 0.5
+
+            if (abs(xLeft)<abs(xRight)):
+                self.position[0]+=min(abs(xLeft), abs(xRight))*0.5
+            else:
+                self.position[0]-=min(abs(xLeft), abs(xRight)) * 0.5
 
 
             print(min(abs(xLeft), abs(xRight)), abs(xLeft)<abs(xRight))
