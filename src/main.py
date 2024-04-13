@@ -1,6 +1,7 @@
 from mapObj import Map
 import pygame as pg
 from cameraObj import Camera
+from textureatlas import TextureAtlas
 
 def main():
     # Initialization
@@ -12,6 +13,9 @@ def main():
     # Main obj init
     MainMap = Map((0, 0), "asset/map.png")
     MainCamera = Camera((500,500))
+
+    texture_atlas = TextureAtlas("asset/atlas.png")
+
     # Main loop
     while running:
         MainCamera.zoom -=0.001
