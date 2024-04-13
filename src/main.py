@@ -1,4 +1,4 @@
-from mapObj import mapObj
+from mapObj import Map
 import pygame as pg
 
 
