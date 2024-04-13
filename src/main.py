@@ -9,6 +9,7 @@ from textureatlas import TextureAtlas
 from ui.Inventory import Inventory
 from entity.Character import Character
 from startscreen import StartScreen
+from endscreen import EndScreen
 from collider import collider
 
 FPS = 60
@@ -44,7 +45,6 @@ def main():
     ui_manager = UIManager(WINDOW_SIZE)
     inventory = Inventory(3, 5, inventory_tile=texture_atlas.get_sprite((4, 0)))
     ui_manager.add_panel(inventory)
-
 
 
     # Main loop
