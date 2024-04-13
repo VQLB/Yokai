@@ -37,9 +37,22 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
-        healthbar.health -= .01
-        hungerbar.hunger -= .002
-        thirstbar.thirst -= .002
+        # Deplete health when hunger or thirst status bars are at 0
+        # TODO: make it so attacking deplete hunger
+        # TODO: make it so walking deplete thirst
+        if hungerbar.hunger <= 0:
+            hungerbar.hunger = 0
+        else:
+            hungerbar.hunger -= .02
+
+        if thirstbar.thirst <= 0:
+            thirstbar.thirst = 0
+        else:
+            thirstbar.thirst -= .03
+
+        if hungerbar.hunger == 0 or thirstbar.thirst == 0:
+            healthbar.health -= .5
+
         MainSurface.fill((0, 0, 0))
 
         MainCamera.position = (testEn.position[0] + 50, testEn.position[1] + 50)
