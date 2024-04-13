@@ -1,3 +1,5 @@
+import pygame
+
 from mapObj import Map
 import pygame as pg
 from cameraObj import Camera
@@ -13,7 +15,7 @@ def main():
     # Initialization
     running = True
     pg.init()
-    MainSurface = pg.display.set_mode((800, 600))
+    MainSurface = pg.display.set_mode((800, 600), pygame.RESIZABLE)
     pg.display.set_caption('Yokai')
     # Status Bars
     healthbar = HealthBar(20, 10, 300, 20, 100)
@@ -23,7 +25,7 @@ def main():
     # Main obj init
     MainMap = Map((0, 0), "asset/map.png")
     MainCamera = Camera((0, 0))
-    testEn = Entity("asset/testCharacter.png")
+    testEn = Entity("asset/atlas.png")
     clock = pg.time.Clock()
 
     texture_atlas = TextureAtlas("asset/atlas.png")
