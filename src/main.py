@@ -8,6 +8,9 @@ from src.ui.UIManager import UIManager
 from textureatlas import TextureAtlas
 from ui.Inventory import Inventory
 from entity.Character import Character
+from startscreen import StartScreen
+from endscreen import EndScreen
+from collider import collider
 
 FPS = 60
 WINDOW_SIZE = (800, 600)
@@ -18,6 +21,10 @@ def main():
     pg.init()
     MainSurface = pg.display.set_mode(WINDOW_SIZE)
     pg.display.set_caption('Yokai')
+
+    # start screen button
+    startscreen = StartScreen()
+
 
     texture_atlas = TextureAtlas("asset/atlas.png")
 
@@ -45,91 +52,122 @@ def main():
         'still_right'
     )
     clock = pg.time.Clock()
+    # BoundingBoxes
+    leftWall = collider((-50,0),(50,1000))
 
+    # inventory
     ui_manager = UIManager(WINDOW_SIZE)
 
     inventory = Inventory(3, 5, inventory_tile=texture_atlas.get_sprite((2, 0)))
 
     ui_manager.add_panel(inventory)
 
+
     # Main loop
     while running:
         delta_time = clock.tick(FPS) / 1000.0
-        print(delta_time)
 
-        keys = pygame.key.get_pressed()
-        main_character_vector = [0.0, 0.0]
-        if keys[pg.K_w]:
-            main_character_vector[1] += -1.5
-        if keys[pg.K_s]:
-            main_character_vector[1] += 1.5
-        if keys[pg.K_a]:
-            main_character_vector[0] += -1.5
-        if keys[pg.K_d]:
-            main_character_vector[0] += 1.5
+        # if start screen visible, skip everything--else play everything else
+        if startscreen.active:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    running = False
+                elif event.type == pg.MOUSEBUTTONDOWN:
+                    startscreen.active = False
+            startscreen.render_self(MainSurface)
 
-        if main_character_vector[0] < 0:
-            MainCharacter.current_texture = 'move_left'
-        elif main_character_vector[0] > 0:
-            MainCharacter.current_texture = 'move_right'
-        elif main_character_vector[0] == 0:
-            if MainCharacter.current_texture == 'move_left':
-                MainCharacter.current_texture = 'still_left'
-            elif MainCharacter.current_texture == 'move_right':
-                MainCharacter.current_texture = 'still_right'
-            elif MainCharacter.current_texture == 'move_down':
-                MainCharacter.current_texture = 'still_down'
+        else:
+            keys = pygame.key.get_pressed()
+            main_character_vector = [0.0, 0.0]
+            if keys[pg.K_w]:
+                main_character_vector[1] += -1.5
+            if keys[pg.K_s]:
+                main_character_vector[1] += 1.5
+            if keys[pg.K_a]:
+                main_character_vector[0] += -1.5
+            if keys[pg.K_d]:
+                main_character_vector[0] += 1.5
 
-        if main_character_vector[1] > 0 and main_character_vector[0] == 0:
-            MainCharacter.current_texture = 'move_down'
-        elif main_character_vector[1] < 0:
-            if MainCharacter.current_texture == 'still_left':
+            if main_character_vector[0] < 0:
                 MainCharacter.current_texture = 'move_left'
-            elif MainCharacter.current_texture == 'still_right':
+            elif main_character_vector[0] > 0:
                 MainCharacter.current_texture = 'move_right'
-        MainCharacter.animation_frame += 1
+            elif main_character_vector[0] == 0:
+                if MainCharacter.current_texture == 'move_left':
+                    MainCharacter.current_texture = 'still_left'
+                elif MainCharacter.current_texture == 'move_right':
+                    MainCharacter.current_texture = 'still_right'
+                elif MainCharacter.current_texture == 'move_down':
+                    MainCharacter.current_texture = 'still_down'
 
-        MainCharacter.moveDir(tuple(main_character_vector))
+            if main_character_vector[1] > 0 and main_character_vector[0] == 0:
+                MainCharacter.current_texture = 'move_down'
+            elif main_character_vector[1] < 0:
+                if MainCharacter.current_texture == 'still_left':
+                    MainCharacter.current_texture = 'move_left'
+                elif MainCharacter.current_texture == 'still_right':
+                    MainCharacter.current_texture = 'move_right'
+            MainCharacter.animation_frame += 1
+            
+            if main_character_vector[0] != 0 or main_character_vector[1] != 0:
+                if hungerbar.value <= 0:
+                    hungerbar.value = 0
+                else:
+                    hungerbar.value -= .02
 
+                if thirstbar.value <= 0:
+                    thirstbar.value = 0
+                else:
+                    thirstbar.value -= .03
+    
+            MainCharacter.moveDir(tuple(main_character_vector))
 
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                running = False
-            if event.type == pygame.MOUSEWHEEL:
-                MainCamera.zoom+=event.y*0.01
-            if event.type == pg.KEYDOWN:
-                if event.key == pg.K_e:
-                    ui_manager.toggle_active(inventory)
+            MainCharacter.moveDir(tuple(mainCharVec), delta_time)
+    
+    
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    running = False
+                if event.type == pygame.MOUSEWHEEL:
+                    MainCamera.zoom+=event.y*0.01
+                    MainCamera.zoom = max(0.25,min(MainCamera.zoom,2))
+                if event.type == pg.KEYDOWN:
+                    if event.key == pg.K_e:
+                        ui_manager.toggle_active(inventory)
+    
+            # Deplete health when hunger or thirst status bars are at 0
+            if hungerbar.value <= 0:
+                hungerbar.value = 0
+            else:
+                hungerbar.value -= .02
+    
+            if thirstbar.value <= 0:
+                thirstbar.value = 0
+            else:
+                thirstbar.value -= .03
+    
+            if hungerbar.value == 0 or thirstbar.value == 0:
+                healthbar.value -= .5
+    
+            MainSurface.fill((0, 0, 0))
+    
+            MainCamera.position = (MainCharacter.position[0] + 50, MainCharacter.position[1] + 50)
+    
+            MainMap.render_self(MainSurface, MainCamera)
+            MainCharacter.render_self(MainSurface, MainCamera)
+            healthbar.render_self(MainSurface)
+            hungerbar.render_self(MainSurface)
+            thirstbar.render_self(MainSurface)
+            print(MainCharacter.isCollidingWith(leftWall))
+            MainCharacter.resolveCollision(leftWall)
+            MainCharacter.render_self(MainSurface, MainCamera)
 
-        # Deplete health when hunger or thirst status bars are at 0
-        # TODO: make it so attacking deplete hunger
-        # TODO: make it so walking deplete thirst
-        if hungerbar.value <= 0:
-            hungerbar.value = 0
-        else:
-            hungerbar.value -= .02
+            leftWall.render_self(MainSurface, MainCamera)
 
-        if thirstbar.value <= 0:
-            thirstbar.value = 0
-        else:
-            thirstbar.value -= .03
+            # UI must render on top of everything
+            ui_manager.render_self(MainSurface)
 
-        if hungerbar.value == 0 or thirstbar.value == 0:
-            healthbar.value -= .5
-
-        MainSurface.fill((0, 0, 0))
-
-        MainCamera.position = (MainCharacter.position[0] + 50, MainCharacter.position[1] + 50)
-
-        MainMap.render_self(MainSurface, MainCamera)
-        MainCharacter.render_self(MainSurface, MainCamera)
-        healthbar.render_self(MainSurface)
-        hungerbar.render_self(MainSurface)
-        thirstbar.render_self(MainSurface)
-        ui_manager.render_self(MainSurface)
         pg.display.flip()
-
-
 
 if __name__ == '__main__':
     main()
