@@ -14,7 +14,6 @@ class Inventory(UIPanel):
     def render_self(self, surface: pygame.Surface, position: tuple[int, int]):
         x, y = position
 
-        slot_locations = []
         for row in range(self.rows):
             for col in range(self.cols):
                 surface.blit(self.inventory_tile, (x + (col * TILE_SIZE), y + (row * TILE_SIZE)))
