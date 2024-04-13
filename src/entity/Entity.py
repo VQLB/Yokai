@@ -17,7 +17,7 @@ class Entity:
         self.collidable = True
         self.health = 100
         self.displayName = "Entity"
-        self.speed = 50
+        self.speed = 100
 
     def modifyHealth(self, offset):
         self.health += offset
@@ -39,15 +39,16 @@ class Entity:
             yUp = self.position[1] - (colliderObj.position[1] + colliderObj.size[1])
             yDown = (self.position[1] + 100) - colliderObj.position[1]
 
-            if (abs(yUp) < abs(yDown)):
-                self.position[1] += min(abs(yUp), abs(yDown)) * 0.5
+            if (min(abs(yUp), abs(yDown))<min(abs(xLeft), abs(xRight))):
+                if (abs(yUp) < abs(yDown)):
+                    self.position[1] += min(abs(yUp), abs(yDown)) * 0.5
+                else:
+                    self.position[1] -= min(abs(yUp), abs(yDown)) * 0.5
             else:
-                self.position[1] -= min(abs(yUp), abs(yDown)) * 0.5
-
-            if (abs(xLeft)<abs(xRight)):
-                self.position[0]+=min(abs(xLeft), abs(xRight))*0.5
-            else:
-                self.position[0]-=min(abs(xLeft), abs(xRight)) * 0.5
+                if (abs(xLeft)<abs(xRight)):
+                    self.position[0]+=min(abs(xLeft), abs(xRight))*0.5
+                else:
+                    self.position[0]-=min(abs(xLeft), abs(xRight)) * 0.5
 
 
             print(min(abs(xLeft), abs(xRight)), abs(xLeft)<abs(xRight))
