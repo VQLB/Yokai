@@ -5,7 +5,8 @@ import pygame as pg
 def main():
     running = True
     pg.init()
-    MainDisplay = pg.display.set_mode((800, 600))
+    mainMap = Map(0,0)
+    MainSurface = pg.display.set_mode((800, 600))
     pg.display.set_caption('Yokai')
     # main loop
     while running:
@@ -13,8 +14,10 @@ def main():
             if event.type == pg.QUIT:
                 running = False
 
-        MainDisplay.fill((255, 255, 255))
+        mainMap.render_self(MainSurface)
+        MainSurface.fill((255, 255, 255))
         pg.display.flip()
+
 
 
 if __name__ == '__main__':
