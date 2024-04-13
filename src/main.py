@@ -3,6 +3,8 @@ import pygame as pg
 from cameraObj import Camera
 from textureatlas import TextureAtlas
 
+FPS = 60
+
 def main():
     # Initialization
     running = True
@@ -12,14 +14,16 @@ def main():
 
     # Main obj init
     MainMap = Map((0, 0), "asset/map.png")
-    MainCamera = Camera((500,500))
+    MainCamera = Camera((500, 500))
+    clock = pg.time.Clock()
 
     texture_atlas = TextureAtlas("asset/atlas.png")
 
     # Main loop
     while running:
-        MainCamera.zoom -=0.001
-        MainCamera.position[0]+=0.1
+        delta_time = clock.tick(FPS) / 1000.0
+
+        MainCamera.position[0] += 0.1
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
