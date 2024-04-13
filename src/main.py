@@ -72,7 +72,6 @@ def main():
             if keys[pg.K_d]:
                 mainCharVec[0] +=1
 
-            MainCharacter.moveDir(tuple(mainCharVec))
             if (mainCharVec[0]!=0 or mainCharVec[1]!=0):
                 if hungerbar.value <= 0:
                     hungerbar.value = 0
@@ -96,23 +95,6 @@ def main():
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_e:
                         ui_manager.toggle_active(inventory)
-
-            # Deplete health when hunger or thirst status bars are at 0
-            # TODO: make it so attacking deplete hunger
-            # TODO: make it so walking deplete thirst
-            if hungerbar.value <= 0:
-                hungerbar.value = 0
-            else:
-                hungerbar.value -= .02
-
-            if thirstbar.value <= 0:
-                thirstbar.value = 0
-            else:
-                thirstbar.value -= .03
-
-            if hungerbar.value == 0 or thirstbar.value == 0:
-                MainCharacter.health -= .5
-                healthbar.value = MainCharacter.health
 
             MainSurface.fill((0, 0, 0))
 
