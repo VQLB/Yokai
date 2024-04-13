@@ -1,5 +1,5 @@
 from mapObj import mapObj
-import pygame
+import pygame as pg
 def main():
     mainMap = mapObj()
     print(mainMap.lilTest)
