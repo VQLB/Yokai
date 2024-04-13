@@ -3,21 +3,27 @@ import pygame
 from mapObj import Map
 import pygame as pg
 from cameraObj import Camera
+from src.ui.UIManager import UIManager
 from textureatlas import TextureAtlas
 from entity.Entity import Entity
 from hungerbar import HungerBar
+from ui.Inventory import Inventory
 from thirstbar import ThirstBar
 from healthbar import HealthBar
 from entity.Character import Character
 
 FPS = 60
+WINDOW_SIZE = (800, 600)
 
 def main():
     # Initialization
     running = True
     pg.init()
-    MainSurface = pg.display.set_mode((800, 600), pygame.RESIZABLE)
+    MainSurface = pg.display.set_mode(WINDOW_SIZE)
     pg.display.set_caption('Yokai')
+
+    texture_atlas = TextureAtlas("asset/atlas.png")
+
     # Status Bars
     healthbar = HealthBar(20, 10, 300, 20, 100)
     hungerbar = HungerBar(20, 40, 300, 20, 100)
@@ -29,7 +35,11 @@ def main():
     MainCharacter = Character("asset/atlas.png")
     clock = pg.time.Clock()
 
-    texture_atlas = TextureAtlas("asset/atlas.png")
+    ui_manager = UIManager(WINDOW_SIZE)
+
+    inventory = Inventory(3, 5, inventory_tile=texture_atlas.get_sprite((4, 0)))
+
+    ui_manager.add_panel(inventory)
 
     # Main loop
     while running:
@@ -55,6 +65,9 @@ def main():
                 running = False
             if event.type == pygame.MOUSEWHEEL:
                 MainCamera.zoom+=event.y*0.01
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_e:
+                    ui_manager.toggle_active(inventory)
 
         # Deplete health when hunger or thirst status bars are at 0
         # TODO: make it so attacking deplete hunger
@@ -81,6 +94,7 @@ def main():
         healthbar.render_self(MainSurface)
         hungerbar.render_self(MainSurface)
         thirstbar.render_self(MainSurface)
+        ui_manager.render_self(MainSurface)
         pg.display.flip()
 
 
