@@ -12,6 +12,15 @@ class Entity:
         self.id = id
         self.textureAtlas = TextureAtlas(texturePath)
         self.position = (0,0)
+        self.collidable = True
+        self.health = 100
+        self.displayName = "Entity"
+        self.speed = 10
+
+    def modifyHealth(self, offset):
+        self.health += offset
+
+
 
     def render_self(self, screen: pygame.Surface, camera: Camera):
         TextureSur = self.textureAtlas.get_sprite((0,0))

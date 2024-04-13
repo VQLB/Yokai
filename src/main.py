@@ -42,6 +42,8 @@ def main():
         thirstbar.thirst -= .002
         MainSurface.fill((0, 0, 0))
 
+        MainCamera.position = (testEn.position[0] + 50, testEn.position[1] + 50)
+
         MainMap.render_self(MainSurface, MainCamera)
         testEn.render_self(MainSurface, MainCamera)
         healthbar.render_self(MainSurface)
