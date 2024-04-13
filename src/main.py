@@ -2,6 +2,7 @@ from mapObj import Map
 import pygame as pg
 from cameraObj import Camera
 from textureatlas import TextureAtlas
+from entity.Entity import Entity
 
 def main():
     # Initialization
@@ -12,14 +13,13 @@ def main():
 
     # Main obj init
     MainMap = Map((0, 0), "asset/map.png")
-    MainCamera = Camera((500,500))
+    MainCamera = Camera((0, 0))
+    testEn = Entity("asset/testCharacter.png")
 
     texture_atlas = TextureAtlas("asset/atlas.png")
 
     # Main loop
     while running:
-        MainCamera.zoom -=0.001
-        MainCamera.position[0]+=0.1
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
@@ -27,6 +27,7 @@ def main():
         MainSurface.fill((0, 0, 0))
 
         MainMap.render_self(MainSurface, MainCamera)
+        testEn.render_self(MainSurface, MainCamera)
 
         pg.display.flip()
 
