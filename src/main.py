@@ -25,7 +25,6 @@ def main():
     startscreen = StartScreen()
 
 
-
     texture_atlas = TextureAtlas("asset/atlas.png")
 
     # Status Bars
@@ -85,17 +84,9 @@ def main():
                 else:
                     thirstbar.value -= .03
 
-        MainCharacter.moveDir(tuple(mainCharVec), delta_time)
+            MainCharacter.moveDir(tuple(mainCharVec), delta_time)
 
 
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    running = False
-                if event.type == pygame.MOUSEWHEEL:
-                    MainCamera.zoom+=event.y*0.01
-                if event.type == pg.KEYDOWN:
-                    if event.key == pg.K_e:
-                        ui_manager.toggle_active(inventory)
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     running = False
@@ -118,12 +109,7 @@ def main():
                 thirstbar.value = 0
             else:
                 thirstbar.value -= .03
-        # Deplete health when hunger or thirst status bars are at 0
-        # TODO: make it so attacking deplete hunger
-        # TODO: make it so walking deplete thirst
 
-            if hungerbar.value == 0 or thirstbar.value == 0:
-                healthbar.value -= .5
             if hungerbar.value == 0 or thirstbar.value == 0:
                 MainCharacter.health -= .5
                 healthbar.value = MainCharacter.health
@@ -140,19 +126,11 @@ def main():
             ui_manager.render_self(MainSurface)
             print(MainCharacter.isCollidingWith(leftWall))
             MainCharacter.resolveCollision(leftWall)
-            MainMap.render_self(MainSurface, MainCamera)
             MainCharacter.render_self(MainSurface, MainCamera)
 
             leftWall.render_self(MainSurface, MainCamera)
 
-            healthbar.render_self(MainSurface)
-            hungerbar.render_self(MainSurface)
-            thirstbar.render_self(MainSurface)
-            ui_manager.render_self(MainSurface)
         pg.display.flip()
-
-
-
 
 if __name__ == '__main__':
     main()
