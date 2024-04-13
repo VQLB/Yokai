@@ -8,6 +8,7 @@ class HungerBar():
         self.hunger = max_hunger
         self.max_hunger = max_hunger
         pass
+
      def render_self(self, surface: pygame.Surface):
         ratio = self.hunger / self.max_hunger
         pygame.draw.rect(surface, (56, 55, 50), (self.x, self.y, self.w, self.h))
