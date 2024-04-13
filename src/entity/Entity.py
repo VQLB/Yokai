@@ -34,8 +34,22 @@ class Entity:
     def resolveCollision(self, colliderObj: collider):
         if self.isCollidingWith(colliderObj):
             xLeft = self.position[0] - (colliderObj.position[0] + colliderObj.size[0])
-            xRight =
-            print(xLeft)
+            xRight = (self.position[0] + 100) - colliderObj.position[0]
+
+            yUp = self.position[1] - (colliderObj.position[1] + colliderObj.size[1])
+            yDown = (self.position[1] + 100) - colliderObj.position[1]
+            if (abs(xLeft)<abs(xRight)):
+                self.position[0]+=min(abs(xLeft), abs(xRight))*0.5
+            else:
+                self.position[0]-=min(abs(xLeft), abs(xRight)) * 0.5
+
+            if (abs(yUp) < abs(yDown)):
+                self.position[1] += min(abs(yUp), abs(yDown)) * 0.5
+            else:
+                self.position[1] -= min(abs(yUp), abs(yDown)) * 0.5
+
+
+            print(min(abs(xLeft), abs(xRight)), abs(xLeft)<abs(xRight))
 
 
     def moveDir(self, vecDir: tuple[float, float], deltaTime: float):

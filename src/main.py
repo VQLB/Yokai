@@ -8,6 +8,7 @@ from src.ui.UIManager import UIManager
 from textureatlas import TextureAtlas
 from ui.Inventory import Inventory
 from entity.Character import Character
+from collider import collider
 
 FPS = 60
 WINDOW_SIZE = (800, 600)
@@ -31,6 +32,8 @@ def main():
     MainCamera = Camera((0, 0))
     MainCharacter = Character("asset/atlas.png")
     clock = pg.time.Clock()
+    # BoundingBoxes
+    leftWall = collider((-50,0),(50,1000))
 
     ui_manager = UIManager(WINDOW_SIZE)
 
@@ -41,7 +44,6 @@ def main():
     # Main loop
     while running:
         delta_time = clock.tick(FPS) / 1000.0
-        print(delta_time)
 
         keys = pygame.key.get_pressed()
         mainCharVec = [0,0]
@@ -54,7 +56,18 @@ def main():
         if keys[pg.K_d]:
             mainCharVec[0] +=1
 
-        MainCharacter.moveDir(tuple(mainCharVec))
+        if (mainCharVec[0]!=0 or mainCharVec[1]!=0):
+            if hungerbar.value <= 0:
+                hungerbar.value = 0
+            else:
+                hungerbar.value -= .02
+
+            if thirstbar.value <= 0:
+                thirstbar.value = 0
+            else:
+                thirstbar.value -= .03
+
+        MainCharacter.moveDir(tuple(mainCharVec), delta_time)
 
 
         for event in pg.event.get():
@@ -62,6 +75,7 @@ def main():
                 running = False
             if event.type == pygame.MOUSEWHEEL:
                 MainCamera.zoom+=event.y*0.01
+                MainCamera.zoom = max(0.25,min(MainCamera.zoom,2))
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_e:
                     ui_manager.toggle_active(inventory)
@@ -69,18 +83,10 @@ def main():
         # Deplete health when hunger or thirst status bars are at 0
         # TODO: make it so attacking deplete hunger
         # TODO: make it so walking deplete thirst
-        if hungerbar.value <= 0:
-            hungerbar.value = 0
-        else:
-            hungerbar.value -= .02
-
-        if thirstbar.value <= 0:
-            thirstbar.value = 0
-        else:
-            thirstbar.value -= .03
 
         if hungerbar.value == 0 or thirstbar.value == 0:
-            healthbar.value -= .5
+            MainCharacter.health -= .5
+            healthbar.value = MainCharacter.health
 
         MainSurface.fill((0, 0, 0))
 
@@ -88,12 +94,17 @@ def main():
 
         MainMap.render_self(MainSurface, MainCamera)
         MainCharacter.render_self(MainSurface, MainCamera)
+
+        leftWall.render_self(MainSurface, MainCamera)
+
         healthbar.render_self(MainSurface)
         hungerbar.render_self(MainSurface)
         thirstbar.render_self(MainSurface)
         ui_manager.render_self(MainSurface)
         pg.display.flip()
 
+        print(MainCharacter.isCollidingWith(leftWall))
+        MainCharacter.resolveCollision(leftWall)
 
 
 if __name__ == '__main__':
