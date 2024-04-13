@@ -11,14 +11,16 @@ def main():
 
     # Main obj init
     MainMap = Map((0, 0), "asset/map.png")
-    MainCamera = Camera((0,0))
+    MainCamera = Camera((500,500))
     # Main loop
     while running:
+        MainCamera.zoom -=0.001
+        MainCamera.position[0]+=0.1
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
 
-        MainSurface.fill((255, 255, 255))
+        MainSurface.fill((0, 0, 0))
 
         MainMap.render_self(MainSurface, MainCamera)
 

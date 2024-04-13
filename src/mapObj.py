@@ -10,5 +10,6 @@ class Map():
 
     def render_self(self, screen: pg.Surface, camera: Camera):
         screenPos = camera.convertWorldToScreen(self.position, screen)
-        screen.blit(self.surfaceTexture, screenPos)
+        mapSize = self.surfaceTexture.get_size()
+        screen.blit(pg.transform.scale(self.surfaceTexture,(mapSize[0]/camera.zoom,mapSize[1]/camera.zoom)), screenPos)
 
