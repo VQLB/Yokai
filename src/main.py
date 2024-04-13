@@ -29,12 +29,26 @@ def main():
     # Main obj init
     MainMap = Map((0, 0), "asset/map.png")
     MainCamera = Camera((0, 0))
-    MainCharacter = Character("asset/atlas.png")
+    # in textures:
+    # for a still frame just put (x, y)
+    # for animated frames put [(x, y), (x2, y2), ...]
+    MainCharacter = Character(
+        texture_atlas,
+        {
+            'still_left': (0, 0),
+            'still_right': (1, 0),
+            'still_down': (0, 3),
+            'move_left': [(0, 1), (1, 1), (2, 1), (1, 1)],
+            'move_right': [(0, 2), (1, 0), (1, 2), (1, 0)],
+            'move_down': [(0, 3), (1, 3)]
+        },
+        'still_right'
+    )
     clock = pg.time.Clock()
 
     ui_manager = UIManager(WINDOW_SIZE)
 
-    inventory = Inventory(3, 5, inventory_tile=texture_atlas.get_sprite((4, 0)))
+    inventory = Inventory(3, 5, inventory_tile=texture_atlas.get_sprite((2, 0)))
 
     ui_manager.add_panel(inventory)
 
@@ -44,17 +58,38 @@ def main():
         print(delta_time)
 
         keys = pygame.key.get_pressed()
-        mainCharVec = [0,0]
+        main_character_vector = [0.0, 0.0]
         if keys[pg.K_w]:
-            mainCharVec[1]+=-1
+            main_character_vector[1] += -1.5
         if keys[pg.K_s]:
-            mainCharVec[1] += 1
+            main_character_vector[1] += 1.5
         if keys[pg.K_a]:
-            mainCharVec[0] +=-1
+            main_character_vector[0] += -1.5
         if keys[pg.K_d]:
-            mainCharVec[0] +=1
+            main_character_vector[0] += 1.5
 
-        MainCharacter.moveDir(tuple(mainCharVec))
+        if main_character_vector[0] < 0:
+            MainCharacter.current_texture = 'move_left'
+        elif main_character_vector[0] > 0:
+            MainCharacter.current_texture = 'move_right'
+        elif main_character_vector[0] == 0:
+            if MainCharacter.current_texture == 'move_left':
+                MainCharacter.current_texture = 'still_left'
+            elif MainCharacter.current_texture == 'move_right':
+                MainCharacter.current_texture = 'still_right'
+            elif MainCharacter.current_texture == 'move_down':
+                MainCharacter.current_texture = 'still_down'
+
+        if main_character_vector[1] > 0 and main_character_vector[0] == 0:
+            MainCharacter.current_texture = 'move_down'
+        elif main_character_vector[1] < 0:
+            if MainCharacter.current_texture == 'still_left':
+                MainCharacter.current_texture = 'move_left'
+            elif MainCharacter.current_texture == 'still_right':
+                MainCharacter.current_texture = 'move_right'
+        MainCharacter.animation_frame += 1
+
+        MainCharacter.moveDir(tuple(main_character_vector))
 
 
         for event in pg.event.get():
