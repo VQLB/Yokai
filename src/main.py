@@ -10,7 +10,7 @@ def main():
     pg.display.set_caption('Yokai')
 
     # Main obj init
-    MainMap = Map((0, 0), "asset\\map.png")
+    MainMap = Map((0, 0), "asset/map.png")
     MainCamera = Camera((0,0))
     # Main loop
     while running:
