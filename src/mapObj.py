@@ -1,13 +1,15 @@
+import pygame
 import pygame as pg
-
+from cameraObj import Camera
 class Map():
-    posX = 0
-    posY = 0
 
 
-    def __init__(self, posX: float, posY: float, texturePath: str):
-        self.posX = posX
-        self.posY = posY
+    def __init__(self, pos: tuple[float, float], texturePath: str):
+        self.posX = pos[0]
+        self.posY = pos[1]
+        self.surfaceTexture = pygame.image.load(texturePath).convert()
 
-    def render_self(self, screen: pg.Surface):
-        screen.
+    def render_self(self, screen: pg.Surface, camera: Camera):
+        textureSize = self.surfaceTexture.get_size()
+        screen.blit(pygame.transform.scale(self.surfaceTexture, (100,100)), (self.posX + camera.posY, self.posY + camera.posX))
+
