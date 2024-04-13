@@ -1,4 +1,4 @@
-from Entity import Entity
+from src.entity.Entity import Entity
 from uuid import UUID
 class Character(Entity):
     def __init__(self, texturePath: str,id: UUID | None = None):
