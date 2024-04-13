@@ -11,11 +11,8 @@ class UIManager:
     def add_panel(self, panel: UIPanel):
         self.panels[panel] = False
 
-    def make_active(self, panel: UIPanel):
-        self.panels[panel] = True
-
-    def make_inactive(self, panel: UIPanel):
-        self.panels[panel] = False
+    def toggle_active(self, panel: UIPanel):
+        self.panels[panel] = not self.panels[panel]
 
     def render_self(self, surface: pygame.Surface):
         active_panels: list[UIPanel] = [panel for panel, active in self.panels.items() if active]
