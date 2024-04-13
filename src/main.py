@@ -5,6 +5,7 @@ from textureatlas import TextureAtlas
 from entity.Entity import Entity
 from hungerbar import HungerBar
 from thirstbar import ThirstBar
+from healthbar import HealthBar
 
 FPS = 60
 
@@ -14,9 +15,11 @@ def main():
     pg.init()
     MainSurface = pg.display.set_mode((800, 600))
     pg.display.set_caption('Yokai')
-    # Bars
-    hungerbar = HungerBar(20, 10, 300, 20, 100)
-    thirstbar = ThirstBar (20, 40, 300, 20, 100)
+    # Status Bars
+    healthbar = HealthBar(20, 10, 300, 20, 100)
+    hungerbar = HungerBar(20, 40, 300, 20, 100)
+    thirstbar = ThirstBar (20, 70, 300, 20, 100)
+
     # Main obj init
     MainMap = Map((0, 0), "asset/map.png")
     MainCamera = Camera((0, 0))
@@ -32,13 +35,14 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 running = False
+        healthbar.health -= .01
         hungerbar.hunger -= .002
         thirstbar.thirst -= .002
         MainSurface.fill((0, 0, 0))
 
         MainMap.render_self(MainSurface, MainCamera)
         testEn.render_self(MainSurface, MainCamera)
-
+        healthbar.render_self(MainSurface)
         hungerbar.render_self(MainSurface)
         thirstbar.render_self(MainSurface)
         pg.display.flip()
