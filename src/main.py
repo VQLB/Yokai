@@ -3,13 +3,11 @@ import pygame
 from mapObj import Map
 import pygame as pg
 from cameraObj import Camera
+from src.StatusBar import StatusBar
 from src.ui.UIManager import UIManager
 from textureatlas import TextureAtlas
 from entity.Entity import Entity
-from hungerbar import HungerBar
 from ui.Inventory import Inventory
-from thirstbar import ThirstBar
-from healthbar import HealthBar
 
 FPS = 60
 WINDOW_SIZE = (800, 600)
@@ -24,9 +22,9 @@ def main():
     texture_atlas = TextureAtlas("asset/atlas.png")
 
     # Status Bars
-    healthbar = HealthBar(20, 10, 300, 20, 100)
-    hungerbar = HungerBar(20, 40, 300, 20, 100)
-    thirstbar = ThirstBar (20, 70, 300, 20, 100)
+    healthbar = StatusBar((20, 10), (300, 20), 100, (9, 77, 5), (143, 13, 13))
+    hungerbar = StatusBar((20, 40), (300, 20), 100, (191, 83, 6), (56, 55, 50))
+    thirstbar = StatusBar((20, 70), (300, 20), 100, (40, 71, 156), (56, 55, 50))
 
     # Main obj init
     MainMap = Map((0, 0), "asset/map.png")
@@ -54,18 +52,18 @@ def main():
         # Deplete health when hunger or thirst status bars are at 0
         # TODO: make it so attacking deplete hunger
         # TODO: make it so walking deplete thirst
-        if hungerbar.hunger <= 0:
-            hungerbar.hunger = 0
+        if hungerbar.value <= 0:
+            hungerbar.value = 0
         else:
-            hungerbar.hunger -= .02
+            hungerbar.value -= .02
 
-        if thirstbar.thirst <= 0:
-            thirstbar.thirst = 0
+        if thirstbar.value <= 0:
+            thirstbar.value = 0
         else:
-            thirstbar.thirst -= .03
+            thirstbar.value -= .03
 
-        if hungerbar.hunger == 0 or thirstbar.thirst == 0:
-            healthbar.health -= .5
+        if hungerbar.value == 0 or thirstbar.value == 0:
+            healthbar.value -= .5
 
         MainSurface.fill((0, 0, 0))
 
