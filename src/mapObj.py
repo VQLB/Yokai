@@ -1,3 +1,4 @@
 class mapObj():
+    lilTest = "a"
     def __init__(self):
-        pass
+        self.lilTest = "bob"
