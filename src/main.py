@@ -39,7 +39,7 @@ def main():
     pg.mixer.init()
     background = pg.mixer.Sound('sound/background music.mp3')
     laugh = pg.mixer.Sound('sound/yokai laugh.mp3')
-    background.play()
+    background.play(loops=-1)
     pg.mixer.music.set_volume(0.2)
     laugh.set_volume(0.4)
     MainSurface = pg.display.set_mode(WINDOW_SIZE)
