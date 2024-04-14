@@ -36,6 +36,8 @@ def main():
     MainMap = Map((0, 0), "asset/map.png")
     MainCamera = Camera((0, 0))
     MainCamera.zoom = 1.2
+
+    # MainCharacter
     # in textures:
     # for a still frame just put (x, y)
     # for animated frames put [(x, y), (x2, y2), ...]
@@ -122,7 +124,6 @@ def main():
                     thirstbar.value = 0
                 else:
                     thirstbar.value -= .03
-
 
             MainCharacter.moveDir(tuple(main_character_vector), delta_time)
 
