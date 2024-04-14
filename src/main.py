@@ -122,6 +122,16 @@ def main():
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     running = False
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    if pygame.mouse.get_pressed()[0]:
+                        currentScreen = "game"
+                        MainCharacter.health = 100
+                        hungerbar.value = 100
+                        thirstbar.value = 100
+                        EnemyList = []
+                        for i in range(3):
+                            spawnEnemy(EnemyList, texture_atlas)
+
             MainSurface.blit(pygame.image.load('asset/ending_screen.png'), (0, 0))
         elif currentScreen == "game":
             keys = pygame.key.get_pressed()
