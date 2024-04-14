@@ -50,5 +50,6 @@ e:
 6. Implementing Status Bar for Hunger, Dehydration, and Health
 7. Implementing an Inventory
 8. Implementing All Assets
-9. Implementing Sounds
-10. Replenishing Mechanics for Dehydration Bar
+9. Implementing Background Sound
+10. Implementing Laughing Sound when Yokai to indicate a successful hit
+1Replenishing Mechanics for Dehydration Bar
