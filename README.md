@@ -36,7 +36,9 @@ e:
 2. Replenishing Mechanics for Hunger Bar
 3. Pick-Up Mechanics
 4. Add tree assets to the environment
-5. Timer
+5. Implementing more sound effects
+6. Change window dimensions for full screen
+7. Timer
 
 # Completed
 1. Animation for the Girl
