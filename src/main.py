@@ -20,10 +20,10 @@ WINDOW_SIZE = (800, 600)
 def spawnEnemy(EnemyList, texture_atlas):
     EnemyList.append(Enemy(texture_atlas,
                            {
-                               'still_left': [(3, 0),(3,1)],
-                               'still_right': [(2,2),(2,3)]
+                               'move_left': [(3, 0),(3,1)],
+                               'move_right': [(2,2),(2,3)]
                            },
-                           'still_right'
+                           'move_left'
                            ))
     EnemyList[len(EnemyList) - 1].speed = 60
     EnemyList[len(EnemyList) - 1].position = list((random.randint(50,950), random.randint(50,950)))
@@ -72,7 +72,9 @@ def main():
             'still_down': (0, 3),
             'move_left': [(0, 1), (1, 1), (2, 1), (1, 1)],
             'move_right': [(0, 2), (6,2), (1, 0) ,(1, 2),(6,2) ,(1, 0)],
-            'move_down': [(0, 3), (1, 3)]
+            'move_down': [(0, 3), (1, 3)],
+            'move_up': [(7,0), (6,3)],
+            'attack': [()]
         },
         'still_right'
     )
@@ -83,7 +85,10 @@ def main():
     topWall = collider((0,50),(1000,50))
     bottomWall = collider((-50,950),(1000,50))
     rightWall = collider((950,0),(50,1000))
-    bigLakeBound = collider((800,100),(200,100))
+    bigLakeBound = collider((420,170),(420,50))
+    bigLakeDrink = collider((370,120),(520,150))
+    attackBound = collider((0,0), (100, 150))
+    hurtBound = collider((0,0),(25,75))
 
     # inventory
     ui_manager = UIManager(WINDOW_SIZE)
@@ -141,6 +146,7 @@ def main():
             if main_character_vector[1] > 0 and main_character_vector[0] == 0:
                 MainCharacter.current_texture = 'move_down'
             elif main_character_vector[1] < 0:
+                MainCharacter.current_texture = "move_up"
                 if MainCharacter.current_texture == 'still_left':
                     MainCharacter.current_texture = 'move_left'
                 elif MainCharacter.current_texture == 'still_right':
@@ -160,7 +166,6 @@ def main():
 
             # Health bar depletes when one of the status bars are gone
             healthbar.value = MainCharacter.health
-            print(MainCharacter.health)
             if hungerbar.value == 0 or thirstbar.value == 0:
                 MainCharacter.health -= .05
             if MainCharacter.health <= 0:
@@ -176,12 +181,18 @@ def main():
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_e:
                         ui_manager.toggle_active(inventory)
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    if pygame.mouse.get_pressed()[0]:
+                        print("left click")
 
 
             MainCharacter.resolveCollision(leftWall)
             MainCharacter.resolveCollision(topWall)
             MainCharacter.resolveCollision(bottomWall)
             MainCharacter.resolveCollision(rightWall)
+            MainCharacter.resolveCollision(bigLakeBound)
+            if MainCharacter.isCollidingWith(bigLakeDrink):
+                thirstbar.value=min(100,thirstbar.value + 0.4)
 
 
             # Zoom bounding
@@ -191,13 +202,18 @@ def main():
 
 
             MainCamera.position = (MainCharacter.position[0] + 50, MainCharacter.position[1] + 50)
+            attackBound.position = (MainCharacter.position[0], MainCharacter.position[1] - 25)
+            hurtBound.position = (MainCharacter.position[0] + 37.5, MainCharacter.position[1] + 12.5)
 
             MainMap.render_self(MainSurface, MainCamera)
+            MainCharacter.render_self(MainSurface, MainCamera)
+
             for i in EnemyList:
                 i.moveTowardEntity(MainCharacter, delta_time)
                 i.render_self(MainSurface, MainCamera)
                 i.animation_frame += 1
-            MainCharacter.render_self(MainSurface, MainCamera)
+                if i.isCollidingWith(hurtBound):
+                    MainCharacter.health-=0.5
 
             healthbar.render_self(MainSurface)
             hungerbar.render_self(MainSurface)
@@ -205,14 +221,14 @@ def main():
 
             ui_manager.render_self(MainSurface)
 
-            MainCharacter.render_self(MainSurface, MainCamera)
-
             topWall.render_self(MainSurface, MainCamera)
             leftWall.render_self(MainSurface, MainCamera)
             bottomWall.render_self(MainSurface, MainCamera)
             rightWall.render_self(MainSurface, MainCamera)
             bigLakeBound.render_self(MainSurface, MainCamera)
-
+            bigLakeDrink.render_self(MainSurface, MainCamera)
+            attackBound.render_self(MainSurface, MainCamera)
+            hurtBound.render_self(MainSurface, MainCamera)
             # UI must render on top of everything
             ui_manager.render_self(MainSurface)
 
