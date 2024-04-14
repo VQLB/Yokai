@@ -35,10 +35,14 @@ def main():
     # Main obj init
     MainMap = Map((0, 0), "asset/map.png")
     MainCamera = Camera((0, 0))
+    MainCamera.zoom = 1.2
     MainCharacter = Character("asset/atlas.png")
+    MainCharacter.position = [100,100]
     clock = pg.time.Clock()
     # BoundingBoxes
-    leftWall = collider((-50,0),(50,1000))
+    leftWall = collider((0,0),(50,1000))
+    topWall = collider((0,50),(1000,50))
+    bottomWall = collider((-50,950),(1000,50))
 
     # inventory
     ui_manager = UIManager(WINDOW_SIZE)
@@ -91,26 +95,36 @@ def main():
                     running = False
                 if event.type == pygame.MOUSEWHEEL:
                     MainCamera.zoom+=event.y*0.01
-                    MainCamera.zoom = max(0.25,min(MainCamera.zoom,2))
+                    #I HATE ZOOMING DANG IT
+                    # MainCamera.zoom = max(1.2,min(MainCamera.zoom,1.25))
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_e:
                         ui_manager.toggle_active(inventory)
 
+
+            MainCharacter.resolveCollision(leftWall)
+            MainCharacter.resolveCollision(topWall)
+            MainCharacter.resolveCollision(bottomWall)
+
+
             MainSurface.fill((0, 0, 0))
 
-            MainCamera.position = (MainCharacter.position[0] + 50, MainCharacter.position[1] + 50)
-
+            # Zoom bounding
+            #MainCamera.position = (min(max(MainCharacter.position[0] + 50, WINDOW_SIZE[0]/2/MainCamera.zoom), 1000-WINDOW_SIZE[0]/2/MainCamera.zoom), min(max(MainCharacter.position[1] + 50,WINDOW_SIZE[1]/2/MainCamera.zoom), 1000-WINDOW_SIZE[1]/2/MainCamera.zoom))
+            # no bounding
+            MainCamera.position = (MainCharacter.position[0], MainCharacter.position[1])
             MainMap.render_self(MainSurface, MainCamera)
             MainCharacter.render_self(MainSurface, MainCamera)
             healthbar.render_self(MainSurface)
             hungerbar.render_self(MainSurface)
             thirstbar.render_self(MainSurface)
             ui_manager.render_self(MainSurface)
-            print(MainCharacter.isCollidingWith(leftWall))
-            MainCharacter.resolveCollision(leftWall)
+
             MainCharacter.render_self(MainSurface, MainCamera)
 
+            topWall.render_self(MainSurface, MainCamera)
             leftWall.render_self(MainSurface, MainCamera)
+            bottomWall.render_self(MainSurface, MainCamera)
 
         pg.display.flip()
 
