@@ -25,7 +25,7 @@ def spawnEnemy(EnemyList, texture_atlas):
                            },
                            'move_left'
                            ))
-    EnemyList[len(EnemyList) - 1].speed = 60
+    EnemyList[len(EnemyList) - 1].speed = 40
     EnemyList[len(EnemyList) - 1].position = list((random.randint(50,950), random.randint(50,950)))
 
 
@@ -35,10 +35,9 @@ def main():
     running = True
     pg.init()
     pg.mixer.init()
-    backsound = pg.mixer.music.load('sound/background music.mp3')
-
+    pg.mixer.music.load('sound/background music.mp3')
+    pg.mixer.music.play()
     pg.mixer.music.set_volume(0.2)
-    backsound.play()
     MainSurface = pg.display.set_mode(WINDOW_SIZE)
     pg.display.set_caption('Yokai')
 
@@ -75,11 +74,12 @@ def main():
             'move_right': [(0, 2), (6,2), (1, 0) ,(1, 2),(6,2) ,(1, 0)],
             'move_down': [(0, 3), (1, 3)],
             'move_up': [(7,0), (6,3)],
-            'attack': [()]
+            'attack': [(3,2),(3,3),(4,0),(4,1)]
         },
         'still_right'
     )
     MainCharacter.position = [100,100]
+    MainCharAttackFrameCount=0
     clock = pg.time.Clock()
     # BoundingBoxes
     leftWall = collider((0,0),(50,1000))
@@ -129,36 +129,40 @@ def main():
                 main_character_vector[0] += -1.5
             if keys[pg.K_d]:
                 main_character_vector[0] += 1.5
-
-            if main_character_vector[0] < 0:
-                MainCharacter.current_texture = 'move_left'
-
-            elif main_character_vector[0] > 0:
-                MainCharacter.current_texture = 'move_right'
-
-            elif main_character_vector[0] == 0:
-                if MainCharacter.current_texture == 'move_left':
-                    MainCharacter.current_texture = 'still_left'
-                elif MainCharacter.current_texture == 'move_right':
-                    MainCharacter.current_texture = 'still_right'
-                elif MainCharacter.current_texture == 'move_down':
-                    MainCharacter.current_texture = 'still_down'
-
-            if main_character_vector[1] > 0 and main_character_vector[0] == 0:
-                MainCharacter.current_texture = 'move_down'
-            elif main_character_vector[1] < 0:
-                MainCharacter.current_texture = "move_up"
-                if MainCharacter.current_texture == 'still_left':
+            if MainCharacter.current_texture != "attack":
+                if main_character_vector[0] < 0:
                     MainCharacter.current_texture = 'move_left'
-                elif MainCharacter.current_texture == 'still_right':
+
+                elif main_character_vector[0] > 0:
                     MainCharacter.current_texture = 'move_right'
+
+                elif main_character_vector[0] == 0:
+                    if MainCharacter.current_texture == 'move_left':
+                        MainCharacter.current_texture = 'still_left'
+                    elif MainCharacter.current_texture == 'move_right':
+                        MainCharacter.current_texture = 'still_right'
+                    elif MainCharacter.current_texture == 'move_down':
+                        MainCharacter.current_texture = 'still_down'
+
+                if main_character_vector[1] > 0 and main_character_vector[0] == 0:
+                    MainCharacter.current_texture = 'move_down'
+                elif main_character_vector[1] < 0:
+                    MainCharacter.current_texture = "move_up"
+                    if MainCharacter.current_texture == 'still_left':
+                        MainCharacter.current_texture = 'move_left'
+                    elif MainCharacter.current_texture == 'still_right':
+                        MainCharacter.current_texture = 'move_right'
+            else:
+                MainCharAttackFrameCount-=1
+                if MainCharAttackFrameCount<=0:
+                    MainCharacter.current_texture="still_right"
             MainCharacter.animation_frame += 1
 
             if main_character_vector[0] != 0 or main_character_vector[1] != 0:
                 if thirstbar.value <= 0:
                     thirstbar.value = 0
                 else:
-                    thirstbar.value -= .5
+                    thirstbar.value -= .02
                 if hungerbar.value <= 0:
                     hungerbar.value = 0
                 else:
@@ -173,6 +177,7 @@ def main():
                 print("ending")
                 currentScreen = "end"
             # zoom in feature for debugging
+            # EVENT HANDLING
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     running = False
@@ -184,7 +189,14 @@ def main():
                         ui_manager.toggle_active(inventory)
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if pygame.mouse.get_pressed()[0]:
-                        print("left click")
+                        if MainCharAttackFrameCount<=0:
+                            print("left click")
+                            MainCharacter.current_texture = "attack"
+                            MainCharAttackFrameCount = 60
+                            for i in EnemyList:
+                                if i.isCollidingWith(attackBound):
+                                    i.health -= 25
+                            EnemyList = [i for i in EnemyList if not i.health<0]
 
 
             MainCharacter.resolveCollision(leftWall)
@@ -193,7 +205,7 @@ def main():
             MainCharacter.resolveCollision(rightWall)
             MainCharacter.resolveCollision(bigLakeBound)
             if MainCharacter.isCollidingWith(bigLakeDrink):
-                thirstbar.value=min(100,thirstbar.value + 0.4)
+                thirstbar.value=min(100,thirstbar.value + 0.2)
 
 
             # Zoom bounding
