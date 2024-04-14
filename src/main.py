@@ -9,6 +9,7 @@ from textureatlas import TextureAtlas
 from ui.Inventory import Inventory
 from entity.Character import Character
 from startscreen import StartScreen
+from endscreen import EndScreen
 from collider import collider
 
 FPS = 60
@@ -38,6 +39,21 @@ def main():
     MainCamera.zoom = 1.2
     MainCharacter = Character("asset/atlas.png")
     MainCharacter.position = [100,100]
+    # in textures:
+    # for a still frame just put (x, y)
+    # for animated frames put [(x, y), (x2, y2), ...]
+    MainCharacter = Character(
+        texture_atlas,
+        {
+            'still_left': (0, 0),
+            'still_right': (1, 0),
+            'still_down': (0, 3),
+            'move_left': [(0, 1), (1, 1), (2, 1), (1, 1)],
+            'move_right': [(0, 2), (1, 0), (1, 2), (1, 0)],
+            'move_down': [(0, 3), (1, 3)]
+        },
+        'still_right'
+    )
     clock = pg.time.Clock()
     # BoundingBoxes
     leftWall = collider((0,0),(50,1000))
@@ -46,9 +62,10 @@ def main():
 
     # inventory
     ui_manager = UIManager(WINDOW_SIZE)
-    inventory = Inventory(3, 5, inventory_tile=texture_atlas.get_sprite((4, 0)))
-    ui_manager.add_panel(inventory)
 
+    inventory = Inventory(3, 5, inventory_tile=texture_atlas.get_sprite((2, 0)))
+
+    ui_manager.add_panel(inventory)
 
 
     # Main loop
@@ -66,17 +83,38 @@ def main():
 
         else:
             keys = pygame.key.get_pressed()
-            mainCharVec = [0,0]
+            main_character_vector = [0.0, 0.0]
             if keys[pg.K_w]:
-                mainCharVec[1]+=-1
+                main_character_vector[1] += -1.5
             if keys[pg.K_s]:
-                mainCharVec[1] += 1
+                main_character_vector[1] += 1.5
             if keys[pg.K_a]:
-                mainCharVec[0] +=-1
+                main_character_vector[0] += -1.5
             if keys[pg.K_d]:
-                mainCharVec[0] +=1
+                main_character_vector[0] += 1.5
 
-            if (mainCharVec[0]!=0 or mainCharVec[1]!=0):
+            if main_character_vector[0] < 0:
+                MainCharacter.current_texture = 'move_left'
+            elif main_character_vector[0] > 0:
+                MainCharacter.current_texture = 'move_right'
+            elif main_character_vector[0] == 0:
+                if MainCharacter.current_texture == 'move_left':
+                    MainCharacter.current_texture = 'still_left'
+                elif MainCharacter.current_texture == 'move_right':
+                    MainCharacter.current_texture = 'still_right'
+                elif MainCharacter.current_texture == 'move_down':
+                    MainCharacter.current_texture = 'still_down'
+
+            if main_character_vector[1] > 0 and main_character_vector[0] == 0:
+                MainCharacter.current_texture = 'move_down'
+            elif main_character_vector[1] < 0:
+                if MainCharacter.current_texture == 'still_left':
+                    MainCharacter.current_texture = 'move_left'
+                elif MainCharacter.current_texture == 'still_right':
+                    MainCharacter.current_texture = 'move_right'
+            MainCharacter.animation_frame += 1
+
+            if main_character_vector[0] != 0 or main_character_vector[1] != 0:
                 if hungerbar.value <= 0:
                     hungerbar.value = 0
                 else:
@@ -87,6 +125,7 @@ def main():
                 else:
                     thirstbar.value -= .03
 
+
             MainCharacter.moveDir(tuple(mainCharVec), delta_time)
 
 
@@ -95,8 +134,7 @@ def main():
                     running = False
                 if event.type == pygame.MOUSEWHEEL:
                     MainCamera.zoom+=event.y*0.01
-                    #I HATE ZOOMING DANG IT
-                    # MainCamera.zoom = max(1.2,min(MainCamera.zoom,1.25))
+                    MainCamera.zoom = max(0.25,min(MainCamera.zoom,2))
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_e:
                         ui_manager.toggle_active(inventory)
@@ -107,12 +145,31 @@ def main():
             MainCharacter.resolveCollision(bottomWall)
 
 
+
+            # Deplete health when hunger or thirst status bars are at 0
+            if hungerbar.value <= 0:
+                hungerbar.value = 0
+            else:
+                hungerbar.value -= .02
+
+            if thirstbar.value <= 0:
+                thirstbar.value = 0
+            else:
+                thirstbar.value -= .03
+
+            if hungerbar.value == 0 or thirstbar.value == 0:
+                healthbar.value -= .5
+
             MainSurface.fill((0, 0, 0))
 
             # Zoom bounding
             #MainCamera.position = (min(max(MainCharacter.position[0] + 50, WINDOW_SIZE[0]/2/MainCamera.zoom), 1000-WINDOW_SIZE[0]/2/MainCamera.zoom), min(max(MainCharacter.position[1] + 50,WINDOW_SIZE[1]/2/MainCamera.zoom), 1000-WINDOW_SIZE[1]/2/MainCamera.zoom))
             # no bounding
             MainCamera.position = (MainCharacter.position[0], MainCharacter.position[1])
+
+
+            MainCamera.position = (MainCharacter.position[0] + 50, MainCharacter.position[1] + 50)
+
             MainMap.render_self(MainSurface, MainCamera)
             MainCharacter.render_self(MainSurface, MainCamera)
             healthbar.render_self(MainSurface)
@@ -120,11 +177,16 @@ def main():
             thirstbar.render_self(MainSurface)
             ui_manager.render_self(MainSurface)
 
+            print(MainCharacter.isCollidingWith(leftWall))
+            MainCharacter.resolveCollision(leftWall)
             MainCharacter.render_self(MainSurface, MainCamera)
 
             topWall.render_self(MainSurface, MainCamera)
             leftWall.render_self(MainSurface, MainCamera)
             bottomWall.render_self(MainSurface, MainCamera)
+
+            # UI must render on top of everything
+            ui_manager.render_self(MainSurface)
 
         pg.display.flip()
 
