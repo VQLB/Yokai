@@ -95,8 +95,10 @@ def main():
 
             if main_character_vector[0] < 0:
                 MainCharacter.current_texture = 'move_left'
+
             elif main_character_vector[0] > 0:
                 MainCharacter.current_texture = 'move_right'
+
             elif main_character_vector[0] == 0:
                 if MainCharacter.current_texture == 'move_left':
                     MainCharacter.current_texture = 'still_left'
@@ -115,18 +117,19 @@ def main():
             MainCharacter.animation_frame += 1
 
             if main_character_vector[0] != 0 or main_character_vector[1] != 0:
-                if hungerbar.value <= 0:
-                    hungerbar.value = 0
-                else:
-                    hungerbar.value -= .02
-
                 if thirstbar.value <= 0:
                     thirstbar.value = 0
                 else:
-                    thirstbar.value -= .03
-
+                    thirstbar.value -= .025
+                if hungerbar.value <= 0:
+                    hungerbar.value = 0
+                else:
+                    hungerbar.value -= .001
             MainCharacter.moveDir(tuple(main_character_vector), delta_time)
 
+            # Health bar depletes when one of the status bars are gone
+            if hungerbar.value == 0 or thirstbar.value == 0:
+                healthbar.value -= .05
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -145,24 +148,10 @@ def main():
 
 
 
-            # Deplete health when hunger or thirst status bars are at 0
-            if hungerbar.value <= 0:
-                hungerbar.value = 0
-            else:
-                hungerbar.value -= .02
-
-            if thirstbar.value <= 0:
-                thirstbar.value = 0
-            else:
-                thirstbar.value -= .03
-
-            if hungerbar.value == 0 or thirstbar.value == 0:
-                healthbar.value -= .5
-
             MainSurface.fill((0, 0, 0))
 
             # Zoom bounding
-            #MainCamera.position = (min(max(MainCharacter.position[0] + 50, WINDOW_SIZE[0]/2/MainCamera.zoom), 1000-WINDOW_SIZE[0]/2/MainCamera.zoom), min(max(MainCharacter.position[1] + 50,WINDOW_SIZE[1]/2/MainCamera.zoom), 1000-WINDOW_SIZE[1]/2/MainCamera.zoom))
+            # MainCamera.position = (min(max(MainCharacter.position[0] + 50, WINDOW_SIZE[0]/2/MainCamera.zoom), 1000-WINDOW_SIZE[0]/2/MainCamera.zoom), min(max(MainCharacter.position[1] + 50,WINDOW_SIZE[1]/2/MainCamera.zoom), 1000-WINDOW_SIZE[1]/2/MainCamera.zoom))
             # no bounding
             MainCamera.position = (MainCharacter.position[0], MainCharacter.position[1])
 
