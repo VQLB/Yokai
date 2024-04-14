@@ -35,7 +35,8 @@ e:
 1. Implementing the Water and Berries
 2. Replenishing Mechanics for Hunger Bar
 3. Pick-Up Mechanics
-4. Timer
+4. Add tree assets to the environment
+5. Timer
 
 # Completed
 1. Animation for the Girl
