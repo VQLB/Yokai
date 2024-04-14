@@ -22,8 +22,8 @@ e:
 
 
 # Development
-1. pygame and pycharm for the framework
-2. ibisPaint and Gimp to develop assets 
+1. pygame and pycharm for the framework - pre-built functions made process easier to implement
+2. ibisPaint and Gimp to develop assets - drew assets instead of using tiles and pixel art which made it easier to work with
 
 # Struggles
 1. We lost one of our programmers because they had friends AKA he left early ;-;
