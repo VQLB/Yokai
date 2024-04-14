@@ -35,10 +35,9 @@ def main():
     running = True
     pg.init()
     pg.mixer.init()
-    backsound = pg.mixer.music.load('sound/background music.mp3')
+    pg.mixer.music.load('sound/background music.mp3')
 
     pg.mixer.music.set_volume(0.2)
-    backsound.play()
     MainSurface = pg.display.set_mode(WINDOW_SIZE)
     pg.display.set_caption('Yokai')
 
