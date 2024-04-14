@@ -22,8 +22,9 @@ def main():
     MainSurface = pg.display.set_mode(WINDOW_SIZE)
     pg.display.set_caption('Yokai')
 
-    # start screen button
+    # Start and End Screen
     startscreen = StartScreen()
+    endscreen = EndScreen()
 
     texture_atlas = TextureAtlas("asset/atlas.png")
 
@@ -120,17 +121,19 @@ def main():
                 if thirstbar.value <= 0:
                     thirstbar.value = 0
                 else:
-                    thirstbar.value -= .025
+                    thirstbar.value -= .5
                 if hungerbar.value <= 0:
                     hungerbar.value = 0
                 else:
-                    hungerbar.value -= .001
+                    hungerbar.value -= .01
             MainCharacter.moveDir(tuple(main_character_vector), delta_time)
 
             # Health bar depletes when one of the status bars are gone
+
             if hungerbar.value == 0 or thirstbar.value == 0:
                 healthbar.value -= .05
 
+            # zoom in feature for debugging
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     running = False
