@@ -25,6 +25,7 @@ def main():
     # start screen button
     startscreen = StartScreen()
 
+
     texture_atlas = TextureAtlas("asset/atlas.png")
 
     # Status Bars
@@ -36,6 +37,8 @@ def main():
     MainMap = Map((0, 0), "asset/map.png")
     MainCamera = Camera((0, 0))
     MainCamera.zoom = 1.2
+    MainCharacter = Character("asset/atlas.png")
+    MainCharacter.position = [100,100]
     # in textures:
     # for a still frame just put (x, y)
     # for animated frames put [(x, y), (x2, y2), ...]
@@ -51,7 +54,6 @@ def main():
         },
         'still_right'
     )
-    MainCharacter.position = [100,100]
     clock = pg.time.Clock()
     # BoundingBoxes
     leftWall = collider((0,0),(50,1000))
@@ -124,7 +126,7 @@ def main():
                     thirstbar.value -= .03
 
 
-            MainCharacter.moveDir(tuple(main_character_vector), delta_time)
+            MainCharacter.moveDir(tuple(mainCharVec), delta_time)
 
 
             for event in pg.event.get():

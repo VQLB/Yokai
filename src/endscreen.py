@@ -2,7 +2,7 @@ import pygame
 
 class EndScreen():
     def __init__(self):
-        self.active = True
+        self.active = False
 
 
     def render_self(self, surface: pygame.Surface):
