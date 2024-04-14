@@ -55,7 +55,7 @@ class Entity:
                     self.position[0]-=min(abs(xLeft), abs(xRight)) * 0.5
 
 
-            print(min(abs(xLeft), abs(xRight)), abs(xLeft)<abs(xRight))
+            #print(min(abs(xLeft), abs(xRight)), abs(xLeft)<abs(xRight))
 
 
     def moveDir(self, vecDir: tuple[float, float], deltaTime: float):
@@ -72,7 +72,7 @@ class Entity:
             frame = texture[frame_idx]
         else:
             frame = texture
-        print('frame', frame)
+        #print('frame', frame)
         TextureSur = self.texture_atlas.get_sprite(frame)
         screenPos = camera.convertWorldToScreen(self.position, screen)
         mapSize = TextureSur.get_size()

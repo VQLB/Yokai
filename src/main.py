@@ -101,7 +101,10 @@ def main():
                     startscreen.active = False
                     currentScreen = "game"
             startscreen.render_self(MainSurface)
-
+        elif currentScreen == "end":
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    running = False
         elif currentScreen == "game":
             keys = pygame.key.get_pressed()
             main_character_vector = [0.0, 0.0]
@@ -149,9 +152,13 @@ def main():
             MainCharacter.moveDir(tuple(main_character_vector), delta_time)
 
             # Health bar depletes when one of the status bars are gone
-
+            healthbar.value = MainCharacter.health
+            print(MainCharacter.health)
             if hungerbar.value == 0 or thirstbar.value == 0:
-                healthbar.value -= .05
+                MainCharacter.health -= .55
+            if MainCharacter.health <= 0:
+                print("ending")
+                currentScreen = "end"
 
             # zoom in feature for debugging
             for event in pg.event.get():
