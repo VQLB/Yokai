@@ -91,6 +91,7 @@ def main():
 
     # Main loop
     while running:
+        MainSurface.fill((0, 0, 0))
         delta_time = clock.tick(FPS) / 1000.0
 
         # if start screen visible, skip everything--else play everything else
@@ -106,6 +107,7 @@ def main():
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     running = False
+            MainSurface.blit(pygame.image.load('asset/ending_screen.png'), (0, 0))
         elif currentScreen == "game":
             keys = pygame.key.get_pressed()
             main_character_vector = [0.0, 0.0]
@@ -160,7 +162,6 @@ def main():
             if MainCharacter.health <= 0:
                 print("ending")
                 currentScreen = "end"
-
             # zoom in feature for debugging
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -178,8 +179,6 @@ def main():
             MainCharacter.resolveCollision(bottomWall)
             MainCharacter.resolveCollision(rightWall)
 
-
-            MainSurface.fill((0, 0, 0))
 
             # Zoom bounding
             # MainCamera.position = (min(max(MainCharacter.position[0] + 50, WINDOW_SIZE[0]/2/MainCamera.zoom), 1000-WINDOW_SIZE[0]/2/MainCamera.zoom), min(max(MainCharacter.position[1] + 50,WINDOW_SIZE[1]/2/MainCamera.zoom), 1000-WINDOW_SIZE[1]/2/MainCamera.zoom))
