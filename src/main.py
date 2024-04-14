@@ -14,7 +14,9 @@ from entity.Enemy import Enemy
 from collider import collider
 import random
 
+random.seed(69)
 FPS = 60
+DRAW_BOUND = False
 WINDOW_SIZE = (800, 600)
 
 def spawnEnemy(EnemyList, texture_atlas):
@@ -35,9 +37,11 @@ def main():
     running = True
     pg.init()
     pg.mixer.init()
-    pg.mixer.music.load('sound/background music.mp3')
-    pg.mixer.music.play()
+    background = pg.mixer.Sound('sound/background music.mp3')
+    laugh = pg.mixer.Sound('sound/yokai laugh.mp3')
+    background.play()
     pg.mixer.music.set_volume(0.2)
+    laugh.set_volume(0.4)
     MainSurface = pg.display.set_mode(WINDOW_SIZE)
     pg.display.set_caption('Yokai')
 
@@ -88,8 +92,9 @@ def main():
     rightWall = collider((950,0),(50,1000))
     bigLakeBound = collider((420,170),(420,50))
     bigLakeDrink = collider((370,120),(520,150))
+    smallLakeBound = collider((170,820),(200,30))
     attackBound = collider((0,0), (100, 150))
-    hurtBound = collider((0,0),(25,75))
+    hurtBound = collider((0,0),(25,50))
 
     # inventory
     ui_manager = UIManager(WINDOW_SIZE)
@@ -165,8 +170,6 @@ def main():
                     thirstbar.value -= .02
                 if hungerbar.value <= 0:
                     hungerbar.value = 0
-                else:
-                    hungerbar.value -= .01
             MainCharacter.moveDir(tuple(main_character_vector), delta_time)
 
             # Health bar depletes when one of the status bars are gone
@@ -183,7 +186,9 @@ def main():
                     running = False
                 if event.type == pygame.MOUSEWHEEL:
                     MainCamera.zoom+=event.y*0.01
-                    MainCamera.zoom = max(0.25,min(MainCamera.zoom,2))
+                    print("a")
+                    MainCamera.zoom = max(1.15,min(MainCamera.zoom,1.25))
+                    print(MainCamera.zoom)
                 if event.type == pg.KEYDOWN:
                     if event.key == pg.K_e:
                         ui_manager.toggle_active(inventory)
@@ -195,28 +200,30 @@ def main():
                             MainCharAttackFrameCount = 60
                             for i in EnemyList:
                                 if i.isCollidingWith(attackBound):
-                                    i.health -= 25
+                                    laugh.play()
+                                    i.health -= 35
                             EnemyList = [i for i in EnemyList if not i.health<0]
-
+                            hungerbar.value-=0.15
+                            if (len(EnemyList)<3):
+                                spawnEnemy(EnemyList, texture_atlas)
 
             MainCharacter.resolveCollision(leftWall)
             MainCharacter.resolveCollision(topWall)
             MainCharacter.resolveCollision(bottomWall)
             MainCharacter.resolveCollision(rightWall)
             MainCharacter.resolveCollision(bigLakeBound)
+            MainCharacter.resolveCollision(smallLakeBound)
             if MainCharacter.isCollidingWith(bigLakeDrink):
                 thirstbar.value=min(100,thirstbar.value + 0.2)
 
 
             # Zoom bounding
-            # MainCamera.position = (min(max(MainCharacter.position[0] + 50, WINDOW_SIZE[0]/2/MainCamera.zoom), 1000-WINDOW_SIZE[0]/2/MainCamera.zoom), min(max(MainCharacter.position[1] + 50,WINDOW_SIZE[1]/2/MainCamera.zoom), 1000-WINDOW_SIZE[1]/2/MainCamera.zoom))
+            MainCamera.position = (min(max(MainCharacter.position[0] + 50, WINDOW_SIZE[0]/2/MainCamera.zoom), 1000-WINDOW_SIZE[0]/2/MainCamera.zoom), min(max(MainCharacter.position[1] + 50,WINDOW_SIZE[1]/2/MainCamera.zoom), 1000-WINDOW_SIZE[1]/2/MainCamera.zoom))
             # no bounding
-            MainCamera.position = (MainCharacter.position[0], MainCharacter.position[1])
+            # MainCamera.position = (MainCharacter.position[0], MainCharacter.position[1])
 
-
-            MainCamera.position = (MainCharacter.position[0] + 50, MainCharacter.position[1] + 50)
             attackBound.position = (MainCharacter.position[0], MainCharacter.position[1] - 25)
-            hurtBound.position = (MainCharacter.position[0] + 37.5, MainCharacter.position[1] + 12.5)
+            hurtBound.position = (MainCharacter.position[0] + 37.5, MainCharacter.position[1] + 25)
 
             MainMap.render_self(MainSurface, MainCamera)
             MainCharacter.render_self(MainSurface, MainCamera)
@@ -226,24 +233,25 @@ def main():
                 i.render_self(MainSurface, MainCamera)
                 i.animation_frame += 1
                 if i.isCollidingWith(hurtBound):
-                    MainCharacter.health-=0.5
+                    MainCharacter.health-=0.25
 
             healthbar.render_self(MainSurface)
             hungerbar.render_self(MainSurface)
             thirstbar.render_self(MainSurface)
 
             ui_manager.render_self(MainSurface)
-
-            topWall.render_self(MainSurface, MainCamera)
-            leftWall.render_self(MainSurface, MainCamera)
-            bottomWall.render_self(MainSurface, MainCamera)
-            rightWall.render_self(MainSurface, MainCamera)
-            bigLakeBound.render_self(MainSurface, MainCamera)
-            bigLakeDrink.render_self(MainSurface, MainCamera)
-            attackBound.render_self(MainSurface, MainCamera)
-            hurtBound.render_self(MainSurface, MainCamera)
-            # UI must render on top of everything
-            ui_manager.render_self(MainSurface)
+            if DRAW_BOUND:
+                topWall.render_self(MainSurface, MainCamera)
+                leftWall.render_self(MainSurface, MainCamera)
+                bottomWall.render_self(MainSurface, MainCamera)
+                rightWall.render_self(MainSurface, MainCamera)
+                bigLakeBound.render_self(MainSurface, MainCamera)
+                bigLakeDrink.render_self(MainSurface, MainCamera)
+                attackBound.render_self(MainSurface, MainCamera)
+                hurtBound.render_self(MainSurface, MainCamera)
+                smallLakeBound.render_self(MainSurface, MainCamera)
+                # UI must render on top of everything
+                ui_manager.render_self(MainSurface)
 
         pg.display.flip()
 
