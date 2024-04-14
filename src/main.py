@@ -34,13 +34,17 @@ def main():
     currentScreen = "start"
     running = True
     pg.init()
+    pg.mixer.init()
+    backsound = pg.mixer.music.load('sound/background music.mp3')
+
+    pg.mixer.music.set_volume(0.2)
+    backsound.play()
     MainSurface = pg.display.set_mode(WINDOW_SIZE)
     pg.display.set_caption('Yokai')
 
     # Start and End Screen
     startscreen = StartScreen()
     endscreen = EndScreen()
-
     texture_atlas = TextureAtlas("asset/atlas.png")
 
     # Status Bars
@@ -50,6 +54,7 @@ def main():
 
     # Main obj init
     MainMap = Map((0, 0), "asset/map.png")
+
     MainCamera = Camera((0, 0))
     MainCamera.zoom = 1.2
     # Enemy
