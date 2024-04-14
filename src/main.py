@@ -10,13 +10,27 @@ from ui.Inventory import Inventory
 from entity.Character import Character
 from startscreen import StartScreen
 from endscreen import EndScreen
+from entity.Enemy import Enemy
 from collider import collider
+import random
 
 FPS = 60
 WINDOW_SIZE = (800, 600)
 
+def spawnEnemy(EnemyList, texture_atlas):
+    EnemyList.append(Enemy(texture_atlas,
+                           {
+                               'still_left': (0, 0),
+                           },
+                           'still_left'
+                           ))
+    EnemyList[len(EnemyList) - 1].speed = 60
+    EnemyList[len(EnemyList) - 1].position = list((random.randint(50,950), random.randint(50,950)))
+
+
 def main():
     # Initialization
+    currentScreen = "start"
     running = True
     pg.init()
     MainSurface = pg.display.set_mode(WINDOW_SIZE)
@@ -36,7 +50,10 @@ def main():
     MainMap = Map((0, 0), "asset/map.png")
     MainCamera = Camera((0, 0))
     MainCamera.zoom = 1.2
-
+    # Enemy
+    EnemyList: [Enemy, ...] = []
+    for i in range(1):
+        spawnEnemy(EnemyList, texture_atlas)
     # MainCharacter
     # in textures:
     # for a still frame just put (x, y)
@@ -59,6 +76,8 @@ def main():
     leftWall = collider((0,0),(50,1000))
     topWall = collider((0,50),(1000,50))
     bottomWall = collider((-50,950),(1000,50))
+    rightWall = collider((950,0),(50,1000))
+    bigLakeBound = collider((800,100),(200,100))
 
     # inventory
     ui_manager = UIManager(WINDOW_SIZE)
@@ -73,15 +92,16 @@ def main():
         delta_time = clock.tick(FPS) / 1000.0
 
         # if start screen visible, skip everything--else play everything else
-        if startscreen.active:
+        if currentScreen == "start":
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     running = False
                 elif event.type == pg.MOUSEBUTTONDOWN:
                     startscreen.active = False
+                    currentScreen = "game"
             startscreen.render_self(MainSurface)
 
-        else:
+        elif currentScreen == "game":
             keys = pygame.key.get_pressed()
             main_character_vector = [0.0, 0.0]
             if keys[pg.K_w]:
@@ -142,7 +162,7 @@ def main():
             MainCharacter.resolveCollision(leftWall)
             MainCharacter.resolveCollision(topWall)
             MainCharacter.resolveCollision(bottomWall)
-
+            MainCharacter.resolveCollision(rightWall)
 
 
             # Deplete health when hunger or thirst status bars are at 0
@@ -170,19 +190,24 @@ def main():
             MainCamera.position = (MainCharacter.position[0] + 50, MainCharacter.position[1] + 50)
 
             MainMap.render_self(MainSurface, MainCamera)
+            for i in EnemyList:
+                i.moveTowardEntity(MainCharacter, delta_time)
+                i.render_self(MainSurface, MainCamera)
             MainCharacter.render_self(MainSurface, MainCamera)
+
             healthbar.render_self(MainSurface)
             hungerbar.render_self(MainSurface)
             thirstbar.render_self(MainSurface)
+
             ui_manager.render_self(MainSurface)
 
-            print(MainCharacter.isCollidingWith(leftWall))
-            MainCharacter.resolveCollision(leftWall)
             MainCharacter.render_self(MainSurface, MainCamera)
 
             topWall.render_self(MainSurface, MainCamera)
             leftWall.render_self(MainSurface, MainCamera)
             bottomWall.render_self(MainSurface, MainCamera)
+            rightWall.render_self(MainSurface, MainCamera)
+            bigLakeBound.render_self(MainSurface, MainCamera)
 
             # UI must render on top of everything
             ui_manager.render_self(MainSurface)
