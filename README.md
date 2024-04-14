@@ -11,7 +11,7 @@ Walking around will deplete the dehydration bar, but going near the water will r
 Swinging around the stick will deplete the hunger bar. 
 
 Left-Click: 
-> Attacks the Yokai
+> Swings aimlessly at the Yokai
 
 WASD: 
 > Moves the Girl
@@ -32,13 +32,14 @@ e:
 4. Planning out our game
 
 # In-Progress
-1. Implementing the Water and Berries
+1. Implementing the Water Bottles and Berries
 2. Replenishing Mechanics for Hunger Bar
 3. Pick-Up Mechanics
 4. Add tree assets to the environment
 5. Implementing more sound effects
 6. Change window dimensions for full screen
-7. Timer
+7. Add bounding box to lower left lake to replenish thirst
+8. Timer
 
 # Completed
 1. Animation for the Girl
@@ -49,5 +50,6 @@ e:
 6. Implementing Status Bar for Hunger, Dehydration, and Health
 7. Implementing an Inventory
 8. Implementing All Assets
-9. Implementing Sounds
-10. Replenishing Mechanics for Dehydration Bar
+9. Implementing Background Sound
+10. Implementing Laughing Sound when Yokai to indicate a successful hit
+1Replenishing Mechanics for Dehydration Bar
