@@ -13,5 +13,7 @@ class Enemy(Entity):
         vecToEn = (target.position[0]-self.position[0], target.position[1]-self.position[1])
         length = math.sqrt(vecToEn[0]*vecToEn[0] + vecToEn[1]*vecToEn[1])
         vecToEn = (vecToEn[0]/length, vecToEn[1]/length)
+        if (vecToEn[0]>0):
+            current_texture = ""
         self.moveDir((vecToEn[0], vecToEn[1]), deltatime)
         print(vecToEn)

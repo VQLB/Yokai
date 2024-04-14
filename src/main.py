@@ -20,9 +20,10 @@ WINDOW_SIZE = (800, 600)
 def spawnEnemy(EnemyList, texture_atlas):
     EnemyList.append(Enemy(texture_atlas,
                            {
-                               'still_left': (0, 0),
+                               'still_left': [(3, 0),(3,1)],
+                               'still_right': [(2,2),(2,3)]
                            },
-                           'still_left'
+                           'still_right'
                            ))
     EnemyList[len(EnemyList) - 1].speed = 60
     EnemyList[len(EnemyList) - 1].position = list((random.randint(50,950), random.randint(50,950)))
@@ -66,7 +67,7 @@ def main():
             'still_right': (1, 0),
             'still_down': (0, 3),
             'move_left': [(0, 1), (1, 1), (2, 1), (1, 1)],
-            'move_right': [(0, 2), (1, 0), (1, 2), (1, 0)],
+            'move_right': [(0, 2), (6,2), (1, 0) ,(1, 2),(6,2) ,(1, 0)],
             'move_down': [(0, 3), (1, 3)]
         },
         'still_right'
@@ -155,7 +156,7 @@ def main():
             healthbar.value = MainCharacter.health
             print(MainCharacter.health)
             if hungerbar.value == 0 or thirstbar.value == 0:
-                MainCharacter.health -= .55
+                MainCharacter.health -= .05
             if MainCharacter.health <= 0:
                 print("ending")
                 currentScreen = "end"
@@ -192,6 +193,7 @@ def main():
             for i in EnemyList:
                 i.moveTowardEntity(MainCharacter, delta_time)
                 i.render_self(MainSurface, MainCamera)
+                i.animation_frame += 1
             MainCharacter.render_self(MainSurface, MainCamera)
 
             healthbar.render_self(MainSurface)
