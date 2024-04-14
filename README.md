@@ -32,13 +32,14 @@ e:
 4. Planning out our game
 
 # In-Progress
-1. Implementing the Water and Berries
+1. Implementing the Water Bottles and Berries
 2. Replenishing Mechanics for Hunger Bar
 3. Pick-Up Mechanics
 4. Add tree assets to the environment
 5. Implementing more sound effects
 6. Change window dimensions for full screen
-7. Timer
+7. Add bounding box to lower left lake to replenish thirst
+8. Timer
 
 # Completed
 1. Animation for the Girl
