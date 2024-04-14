@@ -4,7 +4,7 @@ Contributers: Vivian, Quan, Lilian, Ben
 We created a survival horror game named _Yokai_.
 The problem we aim to solve is boredom! By creating a fun horror game, this will _scare_ the boredom out of our players!
 
-All assets were drawn by one of our teammates.
+All assets were drawn by Vivian.
 
 # Mechanics
 Walking around will deplete the dehydration bar, but going near the water will replenish your dehydration. 
