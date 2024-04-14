@@ -11,7 +11,7 @@ Walking around will deplete the dehydration bar, but going near the water will r
 Swinging around the stick will deplete the hunger bar. 
 
 Left-Click: 
-> Attacks the Yokai
+> Swings aimlessly at the Yokai
 
 WASD: 
 > Moves the Girl
