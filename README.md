@@ -6,6 +6,8 @@ The problem we aim to solve is boredom! By creating a fun horror game, this will
 
 All assets were drawn by Vivian.
 
+Commit at end of Codefest 2024: [256f2a2](https://github.com/VQLB/Yokai/commit/256f2a207f607e4ba2622209abfb22e6d683e7f2)
+
 # Mechanics
 Walking around will deplete the dehydration bar, but going near the water will replenish your dehydration. 
 Swinging around the stick will deplete the hunger bar. 
