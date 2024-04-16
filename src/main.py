@@ -12,29 +12,46 @@ from startscreen import StartScreen
 from endscreen import EndScreen
 from entity.Enemy import Enemy
 from collider import collider
+from entity.FoodObj import FoodObj
 import random
-
+import math
 random.seed(69)
 FPS = 60
-DRAW_BOUND = False
+DRAW_BOUND = True
 WINDOW_SIZE = (800, 600)
+MaxMonster = 3
 
-def spawnEnemy(EnemyList, texture_atlas):
+def spawnEnemy(EnemyList, texture_atlas, MainChar):
     EnemyList.append(Enemy(texture_atlas,
                            {
                                'move_left': [(3, 0),(3,1)],
-                               'move_right': [(2,2),(2,3)]
+                               'move_right': [(2,2),(2,3)],
+                               'hurt': [(7,1),(7,2)]
                            },
                            'move_left'
                            ))
     EnemyList[len(EnemyList) - 1].speed = 40
-    EnemyList[len(EnemyList) - 1].position = list((random.randint(50,950), random.randint(50,950)))
+    spawnPos = list((random.randint(50,950), random.randint(50,950)))
+    while math.sqrt(math.pow(spawnPos[0]-MainChar.position[0],2)+math.pow(spawnPos[1]-MainChar.position[1],2))<400:
+        spawnPos = list((random.randint(50, 950), random.randint(50, 950)))
+    EnemyList[len(EnemyList) - 1].position = spawnPos
 
+def spawnFood(PickupList, texture_atlas, pos: list[int, int]):
+    PickupList.append(FoodObj(texture_atlas,
+                           {
+                               'default' : [(4,3)]
+                           },
+                           'default'
+                           ))
+    PickupList[len(PickupList) - 1].position = pos
+    PickupList[len(PickupList) - 1].speed = 200
 
 def main():
     # Initialization
     currentScreen = "start"
     running = True
+    deathCoolDown = 60
+    pickupEntities = []
     pg.init()
     pg.mixer.init()
     background = pg.mixer.Sound('sound/background music.mp3')
@@ -60,10 +77,6 @@ def main():
 
     MainCamera = Camera((0, 0))
     MainCamera.zoom = 1.2
-    # Enemy
-    EnemyList: [Enemy, ...] = []
-    for i in range(1):
-        spawnEnemy(EnemyList, texture_atlas)
     # MainCharacter
     # in textures:
     # for a still frame just put (x, y)
@@ -84,6 +97,11 @@ def main():
     )
     MainCharacter.position = [100,100]
     MainCharAttackFrameCount=0
+    # Enemy
+    EnemyList: [Enemy, ...] = []
+    for i in range(1):
+        spawnEnemy(EnemyList, texture_atlas, MainCharacter)
+
     clock = pg.time.Clock()
     # BoundingBoxes
     leftWall = collider((0,0),(50,1000))
@@ -93,6 +111,7 @@ def main():
     bigLakeBound = collider((420,170),(420,50))
     bigLakeDrink = collider((370,120),(520,150))
     smallLakeBound = collider((170,820),(200,30))
+    smallLakeDrink = collider((120, 790), (300, 90))
     attackBound = collider((0,0), (100, 150))
     hurtBound = collider((0,0),(25,50))
 
@@ -119,18 +138,22 @@ def main():
                     currentScreen = "game"
             startscreen.render_self(MainSurface)
         elif currentScreen == "end":
+            deathCoolDown -= 1
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     running = False
-                if event.type == pg.MOUSEBUTTONDOWN:
+                if event.type == pg.MOUSEBUTTONDOWN and deathCoolDown<=0:
                     if pygame.mouse.get_pressed()[0]:
                         currentScreen = "game"
                         MainCharacter.health = 100
-                        hungerbar.value = 100
+                        MainCharacter.hunger = 100
+                        hungerbar.value = MainCharacter.hunger
                         thirstbar.value = 100
                         EnemyList = []
-                        for i in range(3):
-                            spawnEnemy(EnemyList, texture_atlas)
+                        pickupEntities = []
+                        MainCharacter.position = [100,100]
+                        for i in range(MaxMonster):
+                            spawnEnemy(EnemyList, texture_atlas, MainCharacter)
 
             MainSurface.blit(pygame.image.load('asset/ending_screen.png'), (0, 0))
         elif currentScreen == "game":
@@ -178,17 +201,18 @@ def main():
                     thirstbar.value = 0
                 else:
                     thirstbar.value -= .02
-                if hungerbar.value <= 0:
-                    hungerbar.value = 0
+                if MainCharacter.hunger <= 0:
+                    MainCharacter.hunger = 0
             MainCharacter.moveDir(tuple(main_character_vector), delta_time)
 
             # Health bar depletes when one of the status bars are gone
             healthbar.value = MainCharacter.health
-            if hungerbar.value == 0 or thirstbar.value == 0:
+            if MainCharacter.hunger == 0 or thirstbar.value == 0:
                 MainCharacter.health -= .05
             if MainCharacter.health <= 0:
                 print("ending")
                 currentScreen = "end"
+                deathCoolDown=60
             # zoom in feature for debugging
             # EVENT HANDLING
             for event in pg.event.get():
@@ -212,11 +236,14 @@ def main():
                                 if i.isCollidingWith(attackBound):
                                     laugh.play()
                                     i.health -= 35
+                                    i.hurtFreezeTimer = 40
+                                if i.health<=0 and random.randint(1,10)<=7:
+                                    spawnFood(pickupEntities, texture_atlas, i.position)
                             EnemyList = [i for i in EnemyList if not i.health<0]
-                            hungerbar.value-=0.15
-                            if (len(EnemyList)<3):
-                                spawnEnemy(EnemyList, texture_atlas)
-
+                            MainCharacter.hunger-=2
+                            if (len(EnemyList)<MaxMonster):
+                                spawnEnemy(EnemyList, texture_atlas, MainCharacter)
+            hungerbar.value = MainCharacter.hunger
             MainCharacter.resolveCollision(leftWall)
             MainCharacter.resolveCollision(topWall)
             MainCharacter.resolveCollision(bottomWall)
@@ -224,6 +251,8 @@ def main():
             MainCharacter.resolveCollision(bigLakeBound)
             MainCharacter.resolveCollision(smallLakeBound)
             if MainCharacter.isCollidingWith(bigLakeDrink):
+                thirstbar.value=min(100,thirstbar.value + 0.2)
+            if MainCharacter.isCollidingWith(smallLakeDrink):
                 thirstbar.value=min(100,thirstbar.value + 0.2)
 
 
@@ -237,6 +266,11 @@ def main():
 
             MainMap.render_self(MainSurface, MainCamera)
             MainCharacter.render_self(MainSurface, MainCamera)
+
+            for i in pickupEntities:
+                i.render_self(MainSurface, MainCamera)
+                i.moveTowardEntity(MainCharacter, delta_time)
+            pickupEntities = [i for i in pickupEntities if not i.consumed]
 
             for i in EnemyList:
                 i.moveTowardEntity(MainCharacter, delta_time)
@@ -260,6 +294,7 @@ def main():
                 attackBound.render_self(MainSurface, MainCamera)
                 hurtBound.render_self(MainSurface, MainCamera)
                 smallLakeBound.render_self(MainSurface, MainCamera)
+                smallLakeDrink.render_self(MainSurface, MainCamera)
                 # UI must render on top of everything
                 ui_manager.render_self(MainSurface)
 

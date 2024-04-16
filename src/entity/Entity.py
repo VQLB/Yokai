@@ -45,14 +45,14 @@ class Entity:
 
             if (min(abs(yUp), abs(yDown))<min(abs(xLeft), abs(xRight))):
                 if (abs(yUp) < abs(yDown)):
-                    self.position[1] += min(abs(yUp), abs(yDown)) * 0.5
+                    self.position[1] += min(abs(yUp), abs(yDown)) * 1
                 else:
-                    self.position[1] -= min(abs(yUp), abs(yDown)) * 0.5
+                    self.position[1] -= min(abs(yUp), abs(yDown)) * 1
             else:
                 if (abs(xLeft)<abs(xRight)):
-                    self.position[0]+=min(abs(xLeft), abs(xRight))*0.5
+                    self.position[0]+=min(abs(xLeft), abs(xRight))*1
                 else:
-                    self.position[0]-=min(abs(xLeft), abs(xRight)) * 0.5
+                    self.position[0]-=min(abs(xLeft), abs(xRight)) * 1
 
 
             #print(min(abs(xLeft), abs(xRight)), abs(xLeft)<abs(xRight))
