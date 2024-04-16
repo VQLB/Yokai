@@ -17,7 +17,7 @@ import random
 import math
 random.seed(69)
 FPS = 60
-DRAW_BOUND = True
+DRAW_BOUND = False
 WINDOW_SIZE = (800, 600)
 MaxMonster = 3
 
